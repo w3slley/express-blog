@@ -1,0 +1,55 @@
+10/08/2019
+I'm back learning more about NodeJs. Today I messed around a bit in the blog I created for myself using NodeJs and Express. Today I learned about Handlebars, specifically about Partials and how data can be accessed by the views. I also learned a bit more abot the Request and Response objects, including some of it's functionalities.
+
+Partials allows you to create components which can be used not in all pages but in some. You create a folder views/partials/partial_name.handlebars and on them you create the structure of you partial. Then you add the context (the data used inside it) locals.partial_name.object, where object is the name of the object you return in the function you create at main.js. In my case, this is what I did:
+
+#Created views/partials/blogposts.handlebars file and wrote:
+
+<div class="post"> 
+    {{#each partials.blogposts.post}}
+        <p class="title"><b>{{title}}</b></p>
+        <p class="author-name">Author: {{author}}</p>
+        <p class="date">{{date}}</p>
+        <p class="blogpost">{{content}}</p>
+    {{/each}}
+</div>
+
+#Then in the main.js file, I created a function with the data I wanted, which would be replaced by the data coming from the database (or in some cases from an API) in a real website:
+
+function getPost(){
+    return {
+        post:[
+            {
+                title: 'Blogpost 1',
+                author: 'Weslley',
+                date: '10/08/2019',
+                content: 'This is the content of the blogpost 1!'
+            },
+            {
+                title: 'Blogpost 2',
+                author: 'Weslley',
+                date: '11/08/2019',
+                content: 'This is the content of the blogpost 2!'
+            }
+        ]
+    };
+}
+
+#Then I created the middleware to allow the this data to be accessed by the views.
+
+app.use(function(req, res, next){
+    if(!res.locals.partials) res.locals.partials = {};
+    res.locals.partials.blogposts = getPost();
+    next();
+});
+
+#And then I declared the partial in the views/posts/home.handlebars file:
+
+<h1>Welcome to my blog!</h1>
+<p>I'm using partials to display the blog posts bellow.</p>
+{{> blogposts}}
+
+#In a nutshell, this was what I did to be able to use partials to display the blog posts information.
+
+
+The next part in the book I'm following is about form handling.

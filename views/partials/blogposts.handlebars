@@ -1,0 +1,9 @@
+<div class="post"> {{!THis partial displays all of the above in when instantiated. The partials.blogspots.post part is the context (data) that it's using. It's coming from the res.locals object which is accessible to the views - I created a middleware to do just that and it's in the main.js file.}}
+{{!We use partials when we want to display small components not in all webpages but in some}}
+    {{#each partials.blogposts.post}}
+        <p class="title"><b>{{title}}</b></p>
+        <p class="author-name">Author: {{author}}</p>
+        <p class="date">{{date}}</p>
+        <p class="blogpost">{{content}}</p>
+    {{/each}}
+</div>
