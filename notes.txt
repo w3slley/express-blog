@@ -52,4 +52,239 @@ app.use(function(req, res, next){
 #In a nutshell, this was what I did to be able to use partials to display the blog posts information.
 
 
-The next part in the book I'm following is about form handling.
+The next part in the book I'm following is about form handling. But before I went into that, I implemented a small feature in which the blog posts are displayed based on the id selected on the URI. Utilizing the function I showed above, I created another function that returns the blogpost with the id in the URI: 
+
+function getPostId(postId){
+    let posts = getPost().post;
+    for(let i = 0; i<posts.length;i++){
+        if (posts[i].id == postId){
+            return posts[i];
+        }
+    }
+}
+
+And then I created a variable that stores this object, ultimatly passing it to the view:
+
+let data = getPostId(req.params.id);
+res.render('posts/post', {data: data});
+
+But this is just a temporary measure because I will do this using the tools from the database, which probably already have a function which does exactaly what my getPostId() does. 
+
+After I take a look at how to deal with forms in Express I will try to learn about MongoDB and use it to store data using NodeJS and Express.
+
+I changed somethings from the code I wrote up there, but at its core it's still the same. One thing it's worth point out is that req.params.parameter indicates the parameter is in the URI. For instance:
+URL: website.com/books/:id
+In the example above the paramater is id and can be accessed with req.params.id!
+ 
+To have access to the input values on forms, I need to download the Body Parser module. Then I can access them using req.body.name.
+
+$ npm install body-parser --save
+
+
+11/08/2019
+
+Today I finished learning about ajax requests on express. I did with the following:
+
+In the view page, 
+
+    $('.register-form').on('submit', function(event){
+        event.preventDefault();
+        let action = $(this).attr('action');
+        let container = $('.data');
+        
+        $.ajax({
+            url: action,
+            type: 'POST',
+            success: function(data){
+                container.html(data.information);
+            },
+            error: function(){
+                $container.html('There was a problem.');
+                
+            }
+        });
+    });
+
+Then in the main.js file:
+
+app.post('/process/register', (req, res)=>{
+    let response = {
+        information: "I'm using AJAX!"
+    }
+    if(req.xhr){
+        res.send(response);
+    } 
+});
+
+This will request the data inside the object response and put it inside the p tag with class data. And that's exactaly what happens.
+
+To pass user data into the server, I changed a couple of things:
+
+$('.register-form').on('submit', function(event){
+        event.preventDefault();
+        let action = $(this).attr('action');
+        let container = $('.data');
+        let name = $('.name').val();
+        let username = $('.username').val();
+        let email = $('.email').val();
+        let password = $('.password').val();
+        $.ajax({
+            url: action,
+            type: 'POST',
+            data: {
+                name: name,
+                username: username,
+                email: email,
+                password: password
+            },
+            success: function(data){
+                container.html(data);
+            }            
+        });
+    });
+
+In the server I just sended the values of the post parameters:
+
+app.post('/process/register', (req, res)=>{
+    res.send(req.body.name + req.body.email + req.body.username + req.body.password)
+});
+
+Remember that you access the values using req.body, not req.params as I was doing... The latter is used for uri routing.
+
+15/08/2019
+Today I will take a look on sessions on NodeJs and Express, see how it works and how I can implment them. I will also learn about MongoDb and mongoose and how to use them to store data using Express. I will finish it off by creating a collection for the user's information in my blog.
+
+17/08/2019
+Today I learned a bit more about mongodb and mongoose inside Express. To find documents in mongodb by its id, use Model.findById(id, callback). I tried to use just find() and it wasn't displaying the data in the view file (when I tried to use data.title it wasn't working - but it did when I used findById).
+
+18/08/2019
+
+1)Created dashboard page to display all posts created by me. I still will add authentication so that I can only see the information when I log in.
+2)Finish implementing the add, edit and delete functionalities on the blog posts. 
+3)Implemented authentication system using Passport. I was having issues at first with the flash messages (I was getting the error req.flash() is not a function). Even now the messages do not appear and I have to fix that later. But what I did to solve it was to download the module connect-flash (npm install connect-flash --save) and adding its middleware:
+
+app.use(flash())
+
+After that created a middleware that checks if the req.user is set. If it is, then it sets the value of the global object res.locals.user to req.user, making it accessible to all views in the app. That's how the user can stay logged. I used the following code:
+
+app.use((req, res, next)=>{
+    if(req.user){
+        res.locals.user = req.user 
+    }
+    next()
+})
+
+Then in the views file, more specifically in the main layout, I made sure that the login and register buttons disapeared when the user is logged in. When they are, the user object is accessible to the views and I can just:
+
+{{#if users}}
+//something
+
+{{else}}
+//another
+
+{{/if}}
+
+And lastly, I created two function:
+
+function protected(req, res, next){
+    if(res.locals.user){
+        return next()
+    }
+    else{
+        res.redirect('/login')
+    }
+}
+
+function protectedWhileLoggedIn(req, res, next){
+    if(res.locals.user){
+        res.redirect('/dashboard')
+    }
+    else{
+        next()
+    }
+}
+
+
+
+
+The first one makes sure that when the user is logged in the routes with this function as a paramater are protected and can only be accessed by logged users. The last makes sure that when the user is logged in he or she will not be able to access the login and registration pages.
+
+19/08/2019
+1)I implemented a way so that flash messages are displayed after a login attempt:
+
+{{#if flash}}
+
+    <div style="text-align: center" class="alert alert-dismissible alert-{{flash.type}}">
+    <button type="button" class="close"
+    data-dismiss="alert" aria-hidden="true">&times;</button>
+    <strong>{{flash.intro}}</strong> {{{flash.message}}}
+    </div>
+    
+{{/if}}
+
+This is the code in the view files. It creates a div with bootstrap attributes.The following code is what I used to implement the flash messages in the router:
+
+
+router.post('/login', function(req, res, next){
+    passport.authenticate('local', function(err, user, info){
+        if(req.body.email == '' || req.body.password == ''){//if there are empty fields
+            req.session.flash = {
+                type: 'danger',
+                intro: 'Empty fields!',
+                message: 'Please insert your information in the empty fields.' 
+            }
+            return res.redirect('/login')    
+        }
+        if(!user){//when email is not correct
+            req.session.flash = {
+                type: 'danger',
+                intro: 'Email or password incorrect!',
+                message: 'Please insert your information again.' 
+            } 
+            return res.redirect('/login')
+        }
+        req.login(user, function(err){
+            if(err){//when email is correct but password isn't
+                req.session.flash = {
+                    type: 'danger',
+                    intro: 'Email or password incorrect!',
+                    message: 'Please insert your information again.'   
+                }
+                return next(err)
+            }
+            else{//when user inserts correct email and password
+                req.session.flash = {
+                    type: 'success',
+                    intro: 'You are now logged in',
+                    message: 'Welcome '+' '+req.user.name+'!'
+                }
+                return res.redirect('/dashboard')
+            } 
+        })
+    })(req, res, next)
+})
+
+Don't remenber the (req, res, next) at the bottom of the passport.authenticate():
+
+passport.authenticate('local', function(err, user, info))(req, res, next)
+
+One important thing I cannot forget is the middleware that makes all of this possible:
+
+
+app.use((req, res, next)=>{
+    res.locals.flash = req.session.flash; 
+    delete req.session.flash;
+    next();
+});
+
+It gets the value of req.session.flash from the login attempt and assigns to the reas.locals.flash object. Now they can be accessed by all the views. It then deletes the flash session so that it is not displayed again after reload.
+
+I prefered to deal with the res.locals approach because using the connect-flash module is very bad (a lot of its features are not very well documented - at least in my opinion - and are even deprecated on express v.4).
+
+THINGS I STILL NEED TO DO:
+
+1)Right now anyone who registers can add, edit and delete the posts. I could either remove the register functionality and only change things from inside the mongodb database (only insert my credentials there), or I could implement functionalities that prevent users from editing posts from each other. But since I will be the only author of the website, I don't see any point in doing that. Let's see...
+2)To start mongodb I need to manually do sudo mongod. I could start mongodb as a service using sudo service mongod start, however that is not working right now. I have to fix that later (this is important for production).
+3)I have to fix the problem I'm having with the flash messages (they are not being displayed).
+
+

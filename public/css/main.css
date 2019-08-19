@@ -2,6 +2,10 @@ body{
     margin: 0;
     
 }
+.body{
+    width: 90%;
+    margin: 0 auto;
+}
 h1, p {
     font-family: arial;
 }
@@ -30,17 +34,41 @@ nav ul li a{
 }
 nav ul li a:hover{
     background-color: rgba(1,1,1,.3);
+    color: white;
+    text-decoration: none;
 }
 nav p{
     font-size: 30px;
     padding: 20px;
     margin: 0;
 }
+.auth{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
 .logo-img{
     
     width: 100px;
 }
 
+/*LOGIN SECTION*/
+.login-form{
+    padding: 20px;
+    width: 50%;
+    margin: 40px auto;
+}
+/*REGISTER SECTION*/
+.register-form{
+    width: 60%;
+    margin: 0 auto;
+    padding: 10px;
+}
+/*Errors*/
+.not-found{
+    width: 100%;
+    text-align: center;
+}
 @media(max-width: 600px){
 
     nav ul{
@@ -60,4 +88,9 @@ nav p{
     nav ul li a:hover{
         background-color: transparent;
     }
+    /*LOGIN SECTION*/
+    
+    /*REGISTER SECTION*/
+    
+
 }
