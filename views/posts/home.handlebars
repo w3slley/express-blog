@@ -2,20 +2,17 @@
 <link rel="stylesheet" href="/css/posts.css">
 
 {{#if flash}}
-
     <div style="text-align: center" class="alert alert-dismissible alert-{{flash.type}}">
     <button type="button" class="close"
     data-dismiss="alert" aria-hidden="true">&times;</button>
     <strong>{{flash.intro}}</strong> {{{flash.message}}}
     </div>
-
 {{/if}}
-
 
 <div class="post"> 
     {{#each posts}}
         <h1 class="title"><a href="/posts/{{id}}"><b>{{title}}</b></a></h1>
-        <p class="author-name">Author: {{author}}</p>
+        <p class="author-name">Author: {{author_name}}</p>
         <p class="date">{{date}}</p>
     {{/each}}
 </div>

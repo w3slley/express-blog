@@ -279,12 +279,27 @@ app.use((req, res, next)=>{
 
 It gets the value of req.session.flash from the login attempt and assigns to the reas.locals.flash object. Now they can be accessed by all the views. It then deletes the flash session so that it is not displayed again after reload.
 
-I prefered to deal with the res.locals approach because using the connect-flash module is very bad (a lot of its features are not very well documented - at least in my opinion - and are even deprecated on express v.4).
+I prefered to deal with the res.locals approach because using the connect-flash module is very bad (a lot of its features are not very well documented - at least in my opinion - and are even deprecated on express 4.
+
+2)I sorted the posts by date both on the /posts route and in the /dashboard route. Now the last post added is at the top.
+
+
+23/08/2019
+My plan for today is to implement access control in the blog. By that I mean multiple users can register, login and add posts but they can only edit and delete the ones they created!
+After that I'll move on and try to create my (humble) social network
+
+1)implemented a basic access control system. I just need to test things out later. Now if the user will see a p tag with the "They are equal" meaning that the user Id stored in the session is equal to the author_id in the post.
+2)Finished implemented access control. Now only the user who added the post can edit and delete it.
+
+24/08/2019
+I think I learn what I had to learn when it comes to the basics of using nodejs and express. Now I need to go and create something I'll use. I already got the initial understanding of routing, database manipulation (basics of course), encryption using bcrypt and authentication, which allowed me to create a basic blog. Now I'll try to do something with my idea of creating a basic social network usind node and express. Let's see how it all goes.
 
 THINGS I STILL NEED TO DO:
 
 1)Right now anyone who registers can add, edit and delete the posts. I could either remove the register functionality and only change things from inside the mongodb database (only insert my credentials there), or I could implement functionalities that prevent users from editing posts from each other. But since I will be the only author of the website, I don't see any point in doing that. Let's see...
+Update: I think it makes more sense if people could just register and add blogpost to the site (for now at least). In the end of the day I'm just messing with things using node and express and this website will not even be seen by anyone else anyways. So this is (DONE).
 2)To start mongodb I need to manually do sudo mongod. I could start mongodb as a service using sudo service mongod start, however that is not working right now. I have to fix that later (this is important for production).
-3)I have to fix the problem I'm having with the flash messages (they are not being displayed).
-
+3)I have to fix the problem I'm having with the flash messages (they are not being displayed). (DONE)
+4)Fix data format displayed on blogs. Now it is a long string with a lot of useless information (like the time standard or whatever it is). (DONE)
+5)By fixing the item 4) I can no longer sort the posts by date. I have to fix that. Update: I can sort by date, however posts added in the same day are not sorted correctly.
 

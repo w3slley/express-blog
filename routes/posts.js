@@ -11,8 +11,16 @@ router.get('/add', protected, (req, res)=>{
 router.post('/add', protected, (req, res)=>{
     let title = req.body.title
     let content = req.body.content
-    let author = "Weslley"
-    let newPost = new Post({title: title, content: content, author: author, date: new Date()})    
+    let authorId = res.locals.user._id
+    let authorName = res.locals.user.name
+    //getting date
+    let d = new Date()
+    let year = d.getFullYear();//gets year number
+    let month = d.getMonth()+1;//gets month number (0-11 where january is 0 and december is 11). I'm adding one to get the correct month number.
+    let day = d.getDate();//gets the day of month (1-30/31)
+    let date = day+'/'+'0'+month+'/'+year
+
+    let newPost = new Post({title: title, content: content, author_id: authorId, author_name: authorName, date: date})    
     newPost.save((err)=>{
         if(err) return console.log(err)
     })
@@ -26,7 +34,17 @@ router.post('/add', protected, (req, res)=>{
 
 router.get('/:id/edit', protected, (req, res)=>{
     Post.findById(req.params.id, (err, post)=>{
-        res.render('posts/edit', {data: post})
+        if(res.locals.user.id == post.author_id){
+            res.render('posts/edit', {data: post})
+        }
+        else{
+            req.session.flash = {
+                type: 'danger',
+                intro: 'Permission denied!',
+                message: ''
+            }
+            res.redirect('/dashboard')
+        }
     })
     
 })
@@ -36,35 +54,76 @@ router.post('/:id/edit', protected, (req, res)=>{
     Post.findOneAndUpdate({_id: req.params.id}, {title: title, content: content}, (err, post)=>{
         if(err) return console.log(err)
 
-        req.session.flash = {
-            type: 'success',
-            intro: 'Post edit!',
-            message: 'Your post was edited successfuly.',
-        };
-        res.redirect('/dashboard')
+        if(res.locals.user.id == post.author_id){
+            req.session.flash = {
+                type: 'success',
+                intro: 'Post edit!',
+                message: 'Your post was edited successfuly.',
+            };
+            res.redirect('/dashboard')
+        }
+        else{
+            req.session.flash = {
+                type: 'danger',
+                intro: 'Permission denied',
+                message: ''
+            }
+            res.redirect('/')
+        }
+        
     })
     
 })
-router.post('/:id/delete', protected, (req, res)=>{
-    Post.deleteOne({_id: req.params.id}, (err)=>{
+router.post('/:id/delete', protected, (req, res)=>{//delete post. Access only bo the user who created the blogpost
+    Post.find({_id: req.params.id}, (err, post)=>{
         if(err) return console.log(err)
-        req.session.flash = {
-            type: 'danger',
-            intro: 'Post deleted!',
-            message: 'Your post was deleted.',
-        };
-        res.redirect('/dashboard')
+        
+        if(res.locals.user.id == post[0].author_id){
+            Post.deleteOne({_id: req.params.id}, (err)=>{
+        
+                if(err) return console.log(err)
+                req.session.flash = {
+                    type: 'danger',
+                    intro: 'Post deleted!',
+                    message: 'Your post was deleted.',
+                };
+                res.redirect('/dashboard')
+            })
+        }
+        else{
+            req.session.flash = {
+                type: 'danger',
+                intro: 'Permission denied!',
+                message: '',
+            }
+            res.redirect('/dashboard')
+        }
     })
+    
    
 })
 
 
-router.get('/:id', (req, res)=>{ //Route for individual post
+router.get('/:id', (req, res)=>{ //Route for individual post, accessed by all users.
     Post.findById(req.params.id, (err, post)=>{
+        if(err) return console.log(err)
+
         if(post){
-            res.render('posts/post', {title: post.title, author: post.author,date:post.date, content: post.content})
+            if(res.locals.user){
+                if(res.locals.user.id == post.author_id){
+                    let equal = true;
+                    res.render('posts/post', {post: post, equal: equal})
+                }
+                else{
+                    res.render('posts/post', {post: post})
+                }
+            }
+            else{
+                res.render('posts/post', {post: post})
+            }
+        
         }
-        else{
+        else{//If there is no post with that id, then no data will be send to view and a message will be displayed (since there will be no data)
             res.render('posts/post')
         }
         

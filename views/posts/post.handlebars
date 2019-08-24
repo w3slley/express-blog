@@ -1,12 +1,23 @@
 <title>{{title}}</title>
 <link rel="stylesheet" href="/css/main.css">
 
-{{#if title}}
+
+{{#if equal}}
+
+<div class="buttons">
+    <form method="POST" action="/posts/{{post._id}}/delete">
+        <a class="btn btn-primary" href="/posts/{{post._id}}/edit">Edit</a>
+        <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
+</div>
+{{/if}}
+
+{{#if post}}
 <div class="post">
-    <h1 class="title">{{title}}</h1>
-    <p class="author">{{author}}</p>
-    <p class="date">{{date}}</p>
-    <p class="content">{{content}}</p>
+    <h1 class="title">{{post.title}}</h1>
+    <p class="author">{{post.author_name}}</p>
+    <p class="date">{{post.date}}</p>
+    <p class="content">{{post.content}}</p>
 </div>
 
 {{else}}

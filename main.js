@@ -7,7 +7,6 @@ const cookieParser = require('cookie-parser')
 const session = require('express-session')
 const mongoose = require('mongoose')
 const app = express()
-const flash = require('connect-flash')//I need this to make Passport work...
 
 
 //Importing models
@@ -109,7 +108,7 @@ app.get('/contact', (req, res)=>{
 });
 
 app.get('/posts', (req, res)=>{
-    Post.find({}).sort('-date').exec((err, posts)=>{
+    Post.find({}).sort({date:'desc', id:'desc'}).exec((err, posts)=>{
         if(err){
             return console.log(err)
         }
@@ -124,7 +123,7 @@ app.get('/posts', (req, res)=>{
 //Dashboard page. Only logged users can access it. The router does the same thing as the function protected (which is in the posts.js file) does.
 app.get('/dashboard', (req, res)=>{
     if(res.locals.user){
-        Post.find((err, posts)=>{
+        Post.find({author_id: res.locals.user.id}).sort('-date').exec((err, posts)=>{
             res.render('dashboard', {posts: posts})
         })
     }
