@@ -1,0 +1,26 @@
+@import "main.css";
+/*Home*/
+.post{
+    width: 90%;
+    margin: 0 auto;
+}
+/*Add*/
+.add-form{
+    width: 70%;
+    margin: 50px auto;  
+}
+.add-form textarea{
+    resize: none;
+    min-height: 300px;
+    overflow: auto;
+}
+/*Edit*/
+.edit-form{
+    width: 70%;
+    margin: 50px auto;
+}
+.edit-form textarea{
+    resize: none;
+    min-height: 300px;
+    overflow: auto;
+}

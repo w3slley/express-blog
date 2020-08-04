@@ -1,0 +1,73 @@
+<title>Sign up</title>
+<link rel="stylesheet" href="/css/main.css">
+
+{{#if flash}}
+
+    <div style="text-align: center" class="alert alert-dismissible alert-{{flash.type}}">
+    <button type="button" class="close"
+    data-dismiss="alert" aria-hidden="true">&times;</button>
+    <strong>{{flash.intro}}</strong> {{{flash.message}}}
+    </div>
+
+{{/if}}
+
+<div class="register-form">
+    <h1>Signup</h1>
+    <form method="POST" action="/user/register">
+        <div class="form-row">
+        <input type="hidden" name="_csrf" value="{{csrf}}">
+        <div class="form-group col-md-6">
+            <label>Name:</label>
+            <input class="form-control" type="text" name="name">
+        </div>
+        <div class="form-group col-md-6">
+            <label>Email:</label>
+            <input class="form-control" type="email" name="email">
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+        <div class="form-group">
+            <label>Username:</label>
+            <input class="form-control" type="text" name="username" >
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input class="form-control" type="password" name="password">
+        </div>
+        <div class="form-group">
+            <label>Repeat Password</label>
+        <input type="password" class="form-control" name="repeatPassword">
+        </div>
+        <button class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+</div>
+
+
+
+
+
+<script>/*
+    $('.register-form').on('submit', function(event){
+        event.preventDefault();
+        let action = $(this).attr('action');
+        let container = $('.data');
+        let name = $('.name').val();
+        let username = $('.username').val();
+        let email = $('.email').val();
+        let password = $('.password').val();
+        $.ajax({
+            url: action,
+            type: 'POST',
+            data: {
+                name: name,
+                username: username,
+                email: email,
+                password: password
+            },
+            success: function(data){
+                container.html(data);
+            }            
+        });
+    });
+    */
+</script>

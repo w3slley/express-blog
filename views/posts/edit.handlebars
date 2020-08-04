@@ -1,0 +1,19 @@
+<title>Edit blogpost</title>
+<link rel="stylesheet" href="/css/posts.css">
+
+{{#if data}}
+<h1>Edit article:</h1>
+<form class="edit-form" method="POST">
+    <div class="form-group">
+        <label>Title:</label>
+        <input class="form-control" type="text" name="title" value="{{data.title}}"><br>
+        <label>Blog post content:</label>
+        <textarea class="form-control" type="text" name="content">{{data.content}}</textarea><br>
+        <button class="btn btn-primary" type="submit">Submit</button> 
+    </div>
+</form>
+{{else}}
+<h1>No posts found.</h1>
+
+{{/if}}
+
